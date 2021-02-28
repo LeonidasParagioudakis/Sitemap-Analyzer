@@ -12,12 +12,7 @@ from fake_headers import Headers
 class TestUtil(unittest.TestCase):
 
 	def test_recursive_read(self):
-		random_header = Headers(browser='firefox',os='win',headers=True,)
-		headers = util.request_helper.replace_browser_versions(random_header.generate())
-		requests_data = {}
-		requests_data['headers'] = headers
-		requests_data['url'] = 'https://www.e-shop.gr/sitemap.xml'
-		sitemap_items = util.struct.sitemap_reader('sitemap_products.phtml','loc',requests_data)
+		sitemap_items = util.struct.sitemap_reader('sitemap_products.phtml','loc','https://www.e-shop.gr/sitemap.xml')
 		self.assertFalse(sitemap_items is None)
 
 if __name__ == '__main__':
