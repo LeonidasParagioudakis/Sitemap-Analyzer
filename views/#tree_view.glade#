@@ -251,7 +251,7 @@
             </child>
             <child>
               <object class="GtkButton" id="save_location_button">
-                <property name="label" translatable="yes">Save Location - </property>
+                <property name="label" translatable="yes">button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

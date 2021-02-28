@@ -14,7 +14,7 @@ class Controller():
         self.builder.add_from_file(tree_view_template_path)
         self.main_window = self.builder.get_object("main_window")
         self.current_filter_language = None
-        self.save_file_path = os.getcwd()
+        self.save_file_path = os.path.join(os.getcwd(),'sitemap_analyzer_results.csv')
         self.init_controllers()
 
     def init_controllers(self):
