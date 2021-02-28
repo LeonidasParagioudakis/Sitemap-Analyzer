@@ -5,7 +5,7 @@ import util.request_helper
 import util.request_helper
 from fake_headers import Headers
 
-def sitemap_reader(sitemap_indicator,element,sitemap_url,stored_items = []):
+def sitemap_reader(sitemap_indicator,element,sitemap_url,file_store_location):
     try:
         requests_data = {}        
         random_header = Headers(browser='firefox',os='win',headers=True,)
@@ -17,11 +17,10 @@ def sitemap_reader(sitemap_indicator,element,sitemap_url,stored_items = []):
         for item in re.finditer(r"<"+str(element)+">(.*?)<\/"+str(element)+">", sitemap_str.text, re.MULTILINE):
             if sitemap_indicator in item.group(1):
                 print ('Going deeper to ',item.group(1))
-                sitemap_reader(sitemap_indicator,element,item.group(1),stored_items)
+                sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location)
             else:
-                stored_items.append(item.group(1))
+                with open(file_store_location,'a') as sitemap_file:
+                    sitemap_file.write(item.group(1) + '\n')
+
     except Exception as e:
         print(e)
-        return stored_items
-
-    return stored_items

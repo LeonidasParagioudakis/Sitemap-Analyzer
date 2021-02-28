@@ -191,6 +191,7 @@
             </child>
             <child>
               <object class="GtkEntry" id="item_text">
+                <property name="name">Item to search for</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -214,6 +215,7 @@
             </child>
             <child>
               <object class="GtkEntry" id="recursion_text">
+                <property name="name">Go deeper if you find</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
@@ -237,6 +239,7 @@
             </child>
             <child>
               <object class="GtkEntry" id="sitemap_location_text">
+                <property name="name">Sitemap URL</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
               </object>
