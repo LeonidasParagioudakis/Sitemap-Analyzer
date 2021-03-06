@@ -251,7 +251,7 @@
             </child>
             <child>
               <object class="GtkButton" id="save_location_button">
-                <property name="label" translatable="yes">Save Location</property>
+                <property name="label" translatable="yes">button</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -288,7 +288,7 @@
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <object class="GtkTreeView">
+              <object class="GtkTreeView" id="main_window_tree_view">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child internal-child="selection">

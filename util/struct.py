@@ -5,6 +5,10 @@ import util.request_helper
 import util.request_helper
 from fake_headers import Headers
 
+def append_to_file(file_store_location,item):
+    with open(file_store_location,'a') as sitemap_file:
+        sitemap_file.write(item + '\n')
+
 def sitemap_reader(sitemap_indicator,element,sitemap_url,file_store_location):
     try:
         requests_data = {}        
@@ -19,8 +23,7 @@ def sitemap_reader(sitemap_indicator,element,sitemap_url,file_store_location):
                 print ('Going deeper to ',item.group(1))
                 sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location)
             else:
-                with open(file_store_location,'a') as sitemap_file:
-                    sitemap_file.write(item.group(1) + '\n')
+                append_to_file(file_store_location,item.group(1))
 
     except Exception as e:
         print(e)
