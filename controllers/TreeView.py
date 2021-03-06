@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk,GLib
 import util.definitions
 import util.struct
 import re
@@ -75,6 +75,9 @@ class TreeView():
 		with open(file_store_location,'a') as sitemap_file:
 			sitemap_file.write(item + '\n')
 
+	def add_item_to_list(self,item):
+		self.sitemap_objects_liststore.append([str(item)])
+
 	def sitemap_reader(self,sitemap_indicator,element,sitemap_url,file_store_location):
 		try:
 			requests_data = {}        
@@ -89,8 +92,8 @@ class TreeView():
 					print ('Going deeper to ',item.group(1))
 					self.sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location)
 				elif (item.group(1) is not None):
-					self.sitemap_objects_liststore.append([str(item.group(1))])
-					self.append_to_file(file_store_location,item.group(1))
+					GLib.idle_add(self.add_item_to_list,str(item.group(1)))
+					self.append_to_file(file_store_location,str(item.group(1)))
 
 		except Exception as e:
 			print(e)
