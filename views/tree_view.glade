@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkImage" id="save_file_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-floppy</property>
+  </object>
   <object class="GtkApplicationWindow" id="main_window">
     <property name="can_focus">False</property>
     <property name="default_width">600</property>
@@ -251,10 +256,13 @@
             </child>
             <child>
               <object class="GtkButton" id="save_location_button">
-                <property name="label" translatable="yes">button</property>
+                <property name="label">Save To File</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="image">save_file_image</property>
+                <property name="use_underline">True</property>
+                <property name="always_show_image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -301,6 +309,19 @@
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkProgressBar" id="main_window_progress_bar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="pulse_step">0.070000000000000007</property>
+            <property name="show_text">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </object>

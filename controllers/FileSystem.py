@@ -8,23 +8,27 @@ class FileSystem():
 	def __init__(self,controller_object):
 		self.controller_object = controller_object
 		self.save_location_button = self.controller_object.builder.get_object("save_location_button")
-		self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
+		#self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
 		self.main_window = self.controller_object.main_window
 		self.save_location_button.connect('clicked',self.open_file_chooser_dialog)
 
 	def open_file_chooser_dialog(self,widget):
-		dialog = Gtk.FileChooserDialog(title="Please choose a file", parent=self.main_window, action=Gtk.FileChooserAction.OPEN)
+		dialog = Gtk.FileChooserDialog(title="Please choose a file", parent=self.main_window)
 		dialog.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK)
 		self.add_filters_to_dialog(dialog)
-		
+		dialog.connect_object('button-release-event',self.on_filesystem_dialog_right_click,dialog)
 		response = dialog.run()
 		if response == Gtk.ResponseType.OK:
 			self.controller_object.save_file_path = dialog.get_filename()
-			self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
+			#self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
 		elif response == Gtk.ResponseType.CANCEL:
 			pass
 
 		dialog.destroy()
+
+	def on_filesystem_dialog_right_click(self, dialog, event):
+		if event.button == 3:
+			print('Dialog clicked')
 
 	def add_filters_to_dialog(self, dialog):
 		filter_text = Gtk.FileFilter()
