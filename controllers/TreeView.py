@@ -20,7 +20,9 @@ class TreeView():
 		self.recursion_text = self.controller_object.builder.get_object("recursion_text")
 		self.sitemap_location_text = self.controller_object.builder.get_object("sitemap_location_text")
 		self.start_button = self.controller_object.builder.get_object("start_button")
+		self.progress_bar = self.controller_object.builder.get_object("main_window_progress_bar")
 		self.initialize_list_store()
+		self.items_count = 0
 		self.start_button.connect('clicked',self.initiate_sitemap_reading)
 
 	def initialize_list_store(self):
@@ -28,7 +30,7 @@ class TreeView():
 		self.tree_view = self.controller_object.builder.get_object("main_window_tree_view")
 		self.tree_view.set_model(self.sitemap_objects_liststore)
 		cellRenderer = Gtk.CellRendererText()
-		column = Gtk.TreeViewColumn("Title", cellRenderer, text=0)
+		column = Gtk.TreeViewColumn("Items", cellRenderer, text=0)
 		self.tree_view.append_column(column)
 
 	def warning_dialog_on_empty_entry(self,message):
@@ -78,7 +80,15 @@ class TreeView():
 	def add_item_to_list(self,item):
 		self.sitemap_objects_liststore.append([str(item)])
 
-	def sitemap_reader(self,sitemap_indicator,element,sitemap_url,file_store_location):
+	def update_progess(self):
+		self.progress_bar.pulse()
+		self.progress_bar.set_text(str(self.items_count))
+		return False
+
+	def fill_progress_bar(self):
+		self.progress_bar.set_fraction(100.0)
+
+	def sitemap_reader(self,sitemap_indicator,element,sitemap_url,file_store_location,parent=0):
 		try:
 			requests_data = {}        
 			random_header = Headers(browser='firefox',os='win',headers=True,)
@@ -86,15 +96,18 @@ class TreeView():
 			requests_data['headers'] = headers
 			requests_data['url'] = sitemap_url
 			sitemap_str = requests.get(**requests_data)
-
+			GLib.idle_add(self.update_progess)
+			parent = parent + 1
 			for item in re.finditer(r"<"+str(element)+">(.*?)<\/"+str(element)+">", sitemap_str.text, re.MULTILINE):
 				if sitemap_indicator in item.group(1):
-					print ('Going deeper to ',item.group(1))
-					self.sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location)
+					self.sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location,parent)
 				elif (item.group(1) is not None):
 					GLib.idle_add(self.add_item_to_list,str(item.group(1)))
+					self.items_count = self.items_count + 1
 					self.append_to_file(file_store_location,str(item.group(1)))
-
+			# AKA the initial call
+			if parent == 1:
+				GLib.idle_add(self.fill_progress_bar)
 		except Exception as e:
 			print(e)
 
