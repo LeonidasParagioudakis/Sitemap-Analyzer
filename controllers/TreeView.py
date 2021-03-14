@@ -26,12 +26,13 @@ class TreeView():
 		self.start_button.connect('clicked',self.initiate_sitemap_reading)
 
 	def initialize_list_store(self):
-		self.sitemap_objects_liststore = Gtk.ListStore(str)
+		self.sitemap_objects_liststore = Gtk.ListStore(int,str)
 		self.tree_view = self.controller_object.builder.get_object("main_window_tree_view")
 		self.tree_view.set_model(self.sitemap_objects_liststore)
-		cellRenderer = Gtk.CellRendererText()
-		column = Gtk.TreeViewColumn("Items", cellRenderer, text=0)
-		self.tree_view.append_column(column)
+		for i, column_title in enumerate(["Num", "Item"]):
+			cellRenderer = Gtk.CellRendererText()
+			column = Gtk.TreeViewColumn(column_title, cellRenderer, text=i)
+			self.tree_view.append_column(column)
 
 	def warning_dialog_on_empty_entry(self,message):
 		dialog = Gtk.MessageDialog(
@@ -77,8 +78,8 @@ class TreeView():
 		with open(file_store_location,'a') as sitemap_file:
 			sitemap_file.write(item + '\n')
 
-	def add_item_to_list(self,item):
-		self.sitemap_objects_liststore.append([str(item)])
+	def add_item_to_list(self,item,count):
+		self.sitemap_objects_liststore.append([count,str(item)])
 
 	def update_progess(self):
 		self.progress_bar.pulse()
@@ -102,8 +103,8 @@ class TreeView():
 				if sitemap_indicator in item.group(1):
 					self.sitemap_reader(sitemap_indicator,element,item.group(1),file_store_location,parent)
 				elif (item.group(1) is not None):
-					GLib.idle_add(self.add_item_to_list,str(item.group(1)))
 					self.items_count = self.items_count + 1
+					GLib.idle_add(self.add_item_to_list,str(item.group(1)),self.items_count )
 					self.append_to_file(file_store_location,str(item.group(1)))
 			# AKA the initial call
 			if parent == 1:
