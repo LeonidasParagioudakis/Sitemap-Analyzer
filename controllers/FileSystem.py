@@ -2,33 +2,63 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+import os
 
 class FileSystem():
 
 	def __init__(self,controller_object):
 		self.controller_object = controller_object
 		self.save_location_button = self.controller_object.builder.get_object("save_location_button")
-		#self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
 		self.main_window = self.controller_object.main_window
 		self.save_location_button.connect('clicked',self.open_file_chooser_dialog)
 
 	def open_file_chooser_dialog(self,widget):
-		dialog = Gtk.FileChooserDialog(title="Please choose a file", parent=self.main_window)
+		dialog = Gtk.FileChooserDialog(title="Please choose a file - or type to create one", 
+										parent=self.main_window, 
+										action=Gtk.FileChooserAction.SAVE)
 		dialog.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK)
 		self.add_filters_to_dialog(dialog)
-		dialog.connect_object('button-release-event',self.on_filesystem_dialog_right_click,dialog)
 		response = dialog.run()
 		if response == Gtk.ResponseType.OK:
-			self.controller_object.save_file_path = dialog.get_filename()
-			#self.save_location_button.set_label('Save Location - ' + self.controller_object.save_file_path)
+			selection = dialog.get_filename()
+			file_selected_or_created = self.handle_file_selection(selection)
+			if file_selected_or_created:
+				self.controller_object.save_file_path = selection
 		elif response == Gtk.ResponseType.CANCEL:
 			pass
-
+		
 		dialog.destroy()
 
-	def on_filesystem_dialog_right_click(self, dialog, event):
-		if event.button == 3:
-			print('Dialog clicked')
+	def handle_file_selection(self,selection):
+		if os.path.isfile(selection):
+			try:
+				response = self.warning_dialog("File in" + str(selection) + " is not empty. Do you want to proceed?")
+				if response == Gtk.ResponseType.OK:
+					return selection
+			except Exception as e:
+				print(e)
+		elif not os.path.isfile(selection):
+			try:
+				with open(selection, 'a') as f:
+					os.utime(selection)
+				return selection
+			except OSError as e:
+				self.warning_dialog("You do not have permission to create file in" + str(selection))
+		return False
+
+	def warning_dialog(self,message):
+		dialog = Gtk.MessageDialog(
+			transient_for=self.main_window,
+			flags=0,
+			message_type=Gtk.MessageType.WARNING,
+			text=message,
+		)
+		dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
+        )
+		response = dialog.run()
+		dialog.destroy()
+		return response
 
 	def add_filters_to_dialog(self, dialog):
 		filter_text = Gtk.FileFilter()
